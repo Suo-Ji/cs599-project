@@ -1,0 +1,100 @@
+1 Introduction
+
+Evidential Deep Learning (EDL) revisits the problem of predictive uncertainty by
+placing a prior distribution over the parameters of a categorical or regression
+output layer. In contrast to Bayesian Neural Networks (BNN), which require
+expensive posterior inference, EDL formulates uncertainty estimation as the
+optimization of a single forward pass with a Dirichlet or Normal-Inverse-Gamma
+prior. The central claim is that aleatoric and epistemic uncertainty can be
+separated without Monte Carlo sampling. This work evaluates EDL on a regression
+benchmark with neural network backbones ranging from a Multilayer Perceptron
+(MLP) to a Graph Neural Network (GNN).
+
+Predictive calibration is reported through Negative Log-Likelihood (NLL) and
+interval-based metrics, specifically the Prediction Interval Coverage
+Probability (PICP) and the Mean Prediction Interval Width (MPIW). The Root Mean
+Squared Error (RMSE) serves as the point-estimate accuracy baseline. Across all
+backbones, the goal is to determine whether EDL reduces NLL while preserving
+RMSE and maintaining tight, well-calibrated prediction intervals.
+
+2 Related Work
+
+Prior uncertainty quantification methods rely on approximate Bayesian inference.
+The BNN family, including MC-Dropout and Stochastic Variational Inference (SVI),
+estimates posterior predictive distributions through repeated stochastic forward
+passes. These approaches achieve competitive NLL but scale poorly with the
+number of parameters. Calibration diagnostics such as the Expected Calibration
+Error (ECE) and the Brier score quantify the gap between predicted confidence
+and empirical accuracy. EDL was proposed to recover calibration without the
+sampling overhead that dominates BNN training budgets.
+
+3 Methodology
+
+3.1 Evidential Regression Formulation
+
+Given a dataset of input-output pairs, the model emits the parameters of a
+Higher-order distribution over the likelihood. For regression, the evidential
+prior is a Normal-Inverse-Gamma distribution whose four parameters are predicted
+by the network. The negative log-likelihood loss is augmented with an evidence
+penalty term that discourages overconfidence on out-of-distribution inputs.
+
+The evidential loss combines a likelihood term with a regularizer:
+
+$$
+\mathcal{L}(\theta) = \mathcal{L}_{NLL}(\theta) + \lambda \, \mathcal{L}_{R}(\theta)
+$$
+
+where the regularization coefficient lambda controls the strength of the
+evidence penalty. Increasing lambda monotonically widens prediction intervals
+and therefore reduces the risk of overconfident, poorly calibrated outputs. The
+MLP backbone predicts the four evidential parameters through a shared trunk and
+four regression heads.
+
+3.2 Backbone Variants
+
+The evidential head is mounted on three backbones. The MLP baseline consists of
+four fully-connected layers. The convolutional variant extends this trunk with
+spatial feature extraction. The GNN variant aggregates neighbor features over a
+fixed graph structure before emitting evidential parameters. All backbones
+share the identical evidential loss so that differences in uncertainty are
+attributable to representation rather than to optimization.
+
+4 Experiments
+
+4.1 Experimental Setup
+
+Each backbone is trained for five hundred epochs with the Adam optimizer at a
+learning rate of one times ten to the minus three. The regularization
+coefficient lambda is selected over a logarithmic grid from ten to the minus
+three to ten to the zero. Early stopping monitors validation NLL with patience
+of twenty epochs. Every configuration is repeated over five random seeds and
+the mean and standard deviation are reported.
+
+4.2 Results
+
+The table below reports RMSE, NLL, PICP, and MPIW across backbones. Lower is
+better for RMSE and NLL. PICP should approach the nominal coverage of zero point
+nine, and MPIW quantifies the average interval width.
+
+| Backbone | RMSE   | NLL   | PICP | MPIW |
+|----------|--------|-------|------|------|
+| MLP      | 0.412  | 1.203 | 0.91 | 1.85 |
+| BNN      | 0.405  | 1.180 | 0.89 | 1.78 |
+| GNN      | 0.389  | 1.140 | 0.90 | 1.69 |
+
+The GNN backbone achieves the lowest RMSE and NLL while maintaining PICP near
+the nominal level. EDL matches the BNN on NLL at a fraction of the inference
+cost, since no stochastic forward passes are required at test time. The MPIW
+values indicate that the GNN produces the tightest calibrated intervals,
+confirming that the evidential parameters estimated over graph-structured
+features are better aligned with the data.
+
+5 Conclusion
+
+Evidential Deep Learning separates aleatoric and epistemic uncertainty without
+Monte Carlo sampling. Mounted on a GNN backbone, EDL attains the lowest RMSE and
+NLL on the regression benchmark while preserving interval coverage. The
+reduction in MPIW demonstrates that calibrated, tight prediction intervals are
+achievable with a single deterministic forward pass. Future work will extend
+the evidential formulation to classification and structured prediction tasks
+where uncertainty calibration directly affects downstream decision making.

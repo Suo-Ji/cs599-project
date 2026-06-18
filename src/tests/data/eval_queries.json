@@ -1,0 +1,86 @@
+{
+  "description": "Mock evaluation dataset of 10 complex academic queries over the sample uncertainty-quantification paper (tests/data/sample_paper.txt). Each entry pairs a query with a ground-truth answer and the terms/sections that define a correct retrieval.",
+  "source_paper": "tests/data/sample_paper.txt",
+  "queries": [
+    {
+      "id": "q01",
+      "category": "experimental",
+      "query": "What RMSE does the GNN backbone achieve, and how does it compare to the other backbones?",
+      "ground_truth": "The GNN backbone achieves the lowest RMSE of 0.389, compared to 0.405 for BNN and 0.412 for MLP.",
+      "key_terms": ["0.389", "GNN", "RMSE"],
+      "relevant_section": "Results"
+    },
+    {
+      "id": "q02",
+      "category": "experimental",
+      "query": "Which backbone has the lowest NLL and what is its value?",
+      "ground_truth": "The GNN backbone has the lowest NLL at 1.140.",
+      "key_terms": ["1.140", "GNN", "NLL"],
+      "relevant_section": "Results"
+    },
+    {
+      "id": "q03",
+      "category": "experimental",
+      "query": "What PICP value is reported for the MLP backbone?",
+      "ground_truth": "The MLP backbone has a PICP of 0.91.",
+      "key_terms": ["0.91", "MLP", "PICP"],
+      "relevant_section": "Results"
+    },
+    {
+      "id": "q04",
+      "category": "methodology",
+      "query": "How does Evidential Deep Learning compare to BNN in terms of inference cost?",
+      "ground_truth": "EDL matches the BNN on NLL at a fraction of the inference cost because no stochastic forward passes are required at test time.",
+      "key_terms": ["BNN", "inference", "stochastic"],
+      "relevant_section": "Results"
+    },
+    {
+      "id": "q05",
+      "category": "experimental",
+      "query": "What MPIW does the GNN produce and what does it indicate about the intervals?",
+      "ground_truth": "The GNN produces an MPIW of 1.69, indicating the tightest calibrated prediction intervals.",
+      "key_terms": ["1.69", "GNN", "MPIW"],
+      "relevant_section": "Results"
+    },
+    {
+      "id": "q06",
+      "category": "methodology",
+      "query": "What prior distribution does evidential regression use, and how many parameters does the network predict?",
+      "ground_truth": "Evidential regression uses a Normal-Inverse-Gamma prior whose four parameters are predicted by the network.",
+      "key_terms": ["Normal-Inverse-Gamma", "four", "parameters"],
+      "relevant_section": "Evidential Regression Formulation"
+    },
+    {
+      "id": "q07",
+      "category": "methodology",
+      "query": "What does the regularization coefficient lambda control in the evidential loss?",
+      "ground_truth": "The coefficient lambda controls the strength of the evidence penalty; increasing lambda widens prediction intervals and reduces the risk of overconfident, poorly calibrated outputs.",
+      "key_terms": ["lambda", "evidence", "intervals"],
+      "relevant_section": "Evidential Regression Formulation"
+    },
+    {
+      "id": "q08",
+      "category": "methodology",
+      "query": "How many backbones were evaluated in the experiments and what are they?",
+      "ground_truth": "Three backbones were evaluated: MLP, BNN, and GNN.",
+      "key_terms": ["three", "MLP", "BNN", "GNN"],
+      "relevant_section": "Backbone Variants"
+    },
+    {
+      "id": "q09",
+      "category": "experimental",
+      "query": "What nominal coverage should the PICP metric approach, and what does PICP measure?",
+      "ground_truth": "PICP should approach the nominal coverage of 0.9; it measures prediction interval coverage probability.",
+      "key_terms": ["0.9", "PICP", "nominal"],
+      "relevant_section": "Results"
+    },
+    {
+      "id": "q10",
+      "category": "experimental",
+      "query": "What optimizer and learning rate were used to train the backbones, and for how many epochs?",
+      "ground_truth": "Each backbone was trained with the Adam optimizer at a learning rate of 1e-3 for five hundred epochs.",
+      "key_terms": ["Adam", "learning", "five hundred"],
+      "relevant_section": "Experimental Setup"
+    }
+  ]
+}
