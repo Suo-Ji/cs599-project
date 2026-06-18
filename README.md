@@ -254,23 +254,20 @@ python -m pytest tests/unit/ -v
 
 ## 🔬 核心设计亮点
 
-<details>
-<summary><b>1. 原子块保护(公式/表格永不拆分)</b></summary>
+1. 原子块保护(公式/表格永不拆分)
 
 解析器将文本分类为**原子块**(equation/table)与段落。分块器保证公式(`$$...$$`、`\begin{equation}`)与表格完整保留在单个 chunk 内,重叠(overlap)绝不复制原子块。这是处理数学密集文献的关键。
 
-<details>
-<summary><b>2. 双重防死循环的自我修正</b></summary>
+2. 双重防死循环的自我修正
 
 Agent 含两个独立重试边界:① Document_Grader 判定 irrelevant → Query_Rewriter 重写(上限 3 轮),达上限强制生成;② Hallucination_Checker 判定不实 → 重新生成(上限 2 轮),达上限回退重新检索。所有 LLM/检索调用包裹在 try-except 中,**token 超时永不崩溃执行图**。
 
-<details>
-<summary><b>3. 确定性二元判断</b></summary>
+3. 确定性二元判断
 
 Document_Grader 与 Hallucination_Checker 输出 `score + decision`,score 低于阈值时**强制翻转** decision,确保条件边基于稳定的机器可读信号分支,而非 LLM 主观措辞。
 
-<details>
-<summary><b>4. 离线/在线零代码切换</b></summary>
+4. 离线/在线零代码切换
+
 
 无 API key 时,系统进入确定性离线模式(完整演示控制流);填入 key 自动切到真实 LLM。同一套脚本,一个开关。
 
