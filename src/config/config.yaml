@@ -1,0 +1,78 @@
+# ============================================================
+# Academic-Literature Agentic RAG — central configuration
+# All tunable parameters live here. Code reads values, never hard-codes them.
+# ============================================================
+
+# --- Filesystem paths (relative to project root) ---
+paths:
+  pdf_dir: "data/pdfs"
+  vectorstore_dir: "data/vectorstore"
+  collection_name: "academic_papers"
+  eval_dataset: "tests/data/eval_queries.json"
+  eval_results: "tests/evaluation/results.json"
+
+# --- Ingestion / chunking ---
+ingestion:
+  embedding_model: "BAAI/bge-large-zh-v1.5"
+  embedding_dim: 1024
+  chunk_min_tokens: 500
+  chunk_max_tokens: 800
+  overlap_ratio: 0.10            # 10% overlap between adjacent chunks
+  min_chunk_tokens: 50           # discard fragments below this size
+  # Keyword lexicon used for metadata extraction. Metric names + model abbreviations
+  # from the target domain (uncertainty quantification / evidential deep learning).
+  keyword_lexicon:
+    metrics: ["RMSE", "MAE", "NLL", "PICP", "MPIW", "CRPS", "calibration", "ECE", "Brier", "AUC"]
+    models: ["BNN", "GNN", "MLP", "EDL", "CNN", "LSTM", "Transformer", "SVI", "MC-Dropout"]
+
+# --- Vector store (Chroma) ---
+vectorstore:
+  distance_metric: "cosine"      # cosine for dense similarity
+  allow_reset: false
+  hnsw:
+    space: "cosine"
+    m: 16
+    ef_construction: 200
+
+# --- Hybrid retrieval & reranking ---
+retrieval:
+  dense_top_k: 20                # candidate chunks from vector search
+  sparse_top_k: 20               # candidate chunks from BM25
+  rrf_k: 60                      # constant in RRF denominator: 1 / (k + rank)
+  rerank_model: "BAAI/bge-reranker-large"
+  rerank_candidates: 20          # chunks fed into the cross-encoder
+  final_top_n: 5                 # chunks forwarded to the LLM context window
+  # Document_Grader relevance threshold (0..1). Below -> trigger query rewrite.
+  grade_score_threshold: 0.6
+
+# --- LangGraph agent control flow ---
+agent:
+  llm:
+    # OpenAI-compatible endpoint. Swap base_url / model to point at any provider.
+    model: "deepseek-ai/DeepSeek-V4-Flash"
+    temperature: 0.0             # deterministic grading/judgement
+    request_timeout: 30          # seconds; protects the graph from token timeouts
+    max_retries: 2
+  max_rewrite_retries: 3         # Query_Rewriter attempts before forced generation
+  grading_binary: true           # deterministic Pass/Fail grading
+  hallucination_binary: true     # deterministic Pass/Fail faithfulness check
+  # Hallucination_Checker: minimum fraction of claims traceable to context.
+  grounded_claim_threshold: 0.8
+
+# --- Evaluation pipeline ---
+evaluation:
+  metrics:
+    - "faithfulness"
+    - "answer_relevancy"
+    - "context_recall"
+    - "context_precision"
+  llm_as_judge_model: "deepseek-ai/DeepSeek-V4-Flash"
+  fail_on:                       # per-metric floor for a result to count as "pass"
+    faithfulness: 0.85
+    answer_relevancy: 0.75
+    context_recall: 0.75
+
+# --- Logging ---
+logging:
+  level: "INFO"                  # DEBUG | INFO | WARNING | ERROR
+  rich_console: true             # structured colored output via rich
