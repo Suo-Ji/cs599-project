@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local data artifacts (keep dirs, ignore contents)
+data/pdfs/*
+!data/pdfs/.gitkeep
+data/vectorstore/*
+!data/vectorstore/.gitkeep
+tests/evaluation/results.json
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / env
+.env
+*.local

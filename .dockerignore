@@ -1,0 +1,32 @@
+# 构建缓存与虚拟环境
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 测试与缓存
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 数据与产物(镜像内不放本地 PDF/向量库,运行时挂载或重新抓取)
+data/vectorstore/
+data/pdfs/*.pdf
+tests/evaluation/results*.json
+
+# 敏感配置(绝不打进镜像)
+.env
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# 已生成的文档
+chainlit.md
